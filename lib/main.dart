@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'screen/message_screen.dart';
+import 'screen/user_screen.dart';
 import 'screen/home_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -16,6 +18,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
       home: const HomeScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+        '/message': (context) => const MessageScreen(),
+        '/user': (context) => const UserScreen(),
+      },
     );
   }
 }
