@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e6_s2/myhomepage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: "assets/.env.local");
   runApp(const MyApp());
 }
 
