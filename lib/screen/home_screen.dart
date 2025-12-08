@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_e6_s2/screen/register_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,7 +12,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter'), elevation: 10.0),
+      appBar: AppBar(
+        title: const Text('Flutter'),
+        elevation: 10.0,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: btRegister,
+              child: const Text('S\'inscrire'),
+            ),
+          ),
+        ],
+      ),
       backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -42,5 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void btUser() {
     Navigator.pushNamed(context, '/user');
+  }
+
+  void btRegister() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+    );
   }
 }

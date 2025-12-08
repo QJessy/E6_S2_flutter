@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_e6_s2/screen/register_screen.dart';
 import 'screen/message_screen.dart';
 import 'screen/user_screen.dart';
 import 'screen/home_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/message': (context) => const MessageScreen(),
         '/user': (context) => const UserScreen(),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }
