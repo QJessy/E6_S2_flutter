@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_e6_s2/screen/login_screen.dart';
 import 'package:flutter_e6_s2/screen/register_screen.dart';
 import 'screen/message_screen.dart';
 import 'screen/user_screen.dart';
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Forum',
+      title: 'E6_S2',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
       home: const HomeScreen(),
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/message': (context) => const MessageScreen(),
         '/user': (context) => const UserScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/login': (context) => const LoginScreen(),
       },
     );
   }

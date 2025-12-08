@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e6_s2/api/user_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -22,41 +21,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
         barrierDismissible: false,
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
+
       try {
-        int result = await registerUser(
-          _firstNameController.text,
-          _lastNameController.text,
+        final String? token = await loginUser(
           _emailController.text,
           _passwordController.text,
         );
+
+        if (!mounted) return;
+
         Navigator.of(context).pop();
-        if (result == 201) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Inscription réussie'),
-              content: Text(
-                'Bonjour, ${_firstNameController.text} ${_lastNameController.text}!',
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacementNamed('/home');
-                  },
-                ),
-              ],
-            ),
-          );
+
+        if (token != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
+
+          Navigator.of(context).pushReplacementNamed('/home');
         } else {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Échec de l’inscription'),
-              content: Text(
-                'Une erreur est survenue : ${result.toString()}. Veuillez réessayer.',
-              ),
+              title: const Text('Erreur de connexion'),
+              content: const Text('Email ou mot de passe incorrect.'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('OK'),
@@ -67,12 +53,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
         }
       } catch (e) {
+        if (!mounted) return;
         Navigator.of(context).pop();
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Erreur'),
-            content: Text('Erreur lors de l’inscription : $e'),
+            content: Text('Erreur lors de la connexion : $e'),
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
@@ -88,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Inscription')),
+      appBar: AppBar(title: const Text('Connexion')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -96,34 +83,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'Prénom'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer votre prénom';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Nom'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez entrer votre nom';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Veuillez entrer votre email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Veuillez entrer un email valide';
                   }
                   return null;
                 },
@@ -143,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text('S\'inscrire'),
+                  child: const Text('Se connecter'),
                 ),
               ),
             ],

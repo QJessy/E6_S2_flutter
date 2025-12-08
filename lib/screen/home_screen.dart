@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_e6_s2/screen/login_screen.dart';
 import 'package:flutter_e6_s2/screen/register_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,14 +14,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter'),
+        title: const Text('S6_S2'),
         elevation: 10.0,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
+              onTap: btLogin,
+              child: const Text('Connexion'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
               onTap: btRegister,
-              child: const Text('S\'inscrire'),
+              child: const Text('Inscription'),
             ),
           ),
         ],
@@ -61,6 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const RegisterScreen()),
+    );
+  }
+
+  void btLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 }
