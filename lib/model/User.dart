@@ -12,11 +12,15 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final dateString = json['dateInscription'] as String? ?? '';
+
     return UserModel(
-      id: json['id'] ?? 0,
-      nom: json['nom'] ?? '',
-      prenom: json['prenom'] ?? '',
-      dateInscription: DateTime.parse(json['dateInscription']),
+      id: json['id'],
+      nom: json['nom'],
+      prenom: json['prenom'],
+      dateInscription: dateString.isNotEmpty
+          ? DateTime.parse(dateString)
+          : DateTime.now(),
     );
   }
 }
