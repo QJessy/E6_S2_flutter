@@ -76,20 +76,6 @@ class _UserScreenState extends State<UserScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Inscrit depuis le "
-                          "${u.dateInscription.day.toString().padLeft(2, '0')}/"
-                          "${u.dateInscription.month.toString().padLeft(2, '0')}/"
-                          "${u.dateInscription.year} "
-                          "à "
-                          "${u.dateInscription.hour.toString().padLeft(2, '0')}:"
-                          "${u.dateInscription.minute.toString().padLeft(2, '0')}",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
                       ],
                     ),
                   ),
