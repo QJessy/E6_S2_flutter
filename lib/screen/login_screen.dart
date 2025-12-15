@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e6_s2/api/user_api.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,6 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  final _storage = const FlutterSecureStorage();
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -33,8 +35,13 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pop();
 
         if (token != null) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('auth_token', token);
+          await _storage.write(key: 'auth_token', value: token);
+
+          print('✅ Connexion réussie ! Token d\'authentification :');
+          print(token);
+
+          final storedToken = await _storage.read(key: 'auth_token');
+          print('Token lu depuis secure_storage : $storedToken');
 
           Navigator.of(context).pushReplacementNamed('/home');
         } else {
