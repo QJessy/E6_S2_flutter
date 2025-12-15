@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_e6_s2/screen/user_detail_screen.dart';
 import '../api/user_api.dart';
 import '../model/User.dart';
 
@@ -48,37 +49,49 @@ class _UserScreenState extends State<UserScreen> {
             itemCount: users.length, // nombre de users
             itemBuilder: (context, index) {
               final u = users[index]; // user courant
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                color: Colors.white,
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(u.nom, style: const TextStyle(fontSize: 16)),
-                          const SizedBox(width: 4),
-                          Text(u.prenom, style: const TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Inscrit depuis le "
-                        "${u.dateInscription.day.toString().padLeft(2, '0')}/"
-                        "${u.dateInscription.month.toString().padLeft(2, '0')}/"
-                        "${u.dateInscription.year} "
-                        "à "
-                        "${u.dateInscription.hour.toString().padLeft(2, '0')}:"
-                        "${u.dateInscription.minute.toString().padLeft(2, '0')}",
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                    ],
+              return GestureDetector(
+                onTap: () => detailMessage(u),
+                child: Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  color: Colors.white,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(u.nom, style: const TextStyle(fontSize: 16)),
+                            const SizedBox(width: 4),
+                            Text(
+                              u.prenom,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Inscrit depuis le "
+                          "${u.dateInscription.day.toString().padLeft(2, '0')}/"
+                          "${u.dateInscription.month.toString().padLeft(2, '0')}/"
+                          "${u.dateInscription.year} "
+                          "à "
+                          "${u.dateInscription.hour.toString().padLeft(2, '0')}:"
+                          "${u.dateInscription.minute.toString().padLeft(2, '0')}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -86,6 +99,13 @@ class _UserScreenState extends State<UserScreen> {
           );
         },
       ),
+    );
+  }
+
+  void detailMessage(UserModel user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserDetailScreen(user: user)),
     );
   }
 }
