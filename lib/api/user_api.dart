@@ -52,27 +52,18 @@ Future<int> registerUser(
   }
 }
 
-Future<String?> loginUser(String email, String password) async {
+Future<http.Response> login(String email, String password) async {
   final String baseUrl = dotenv.env['API_BASE_URL']!;
-  final uri = Uri.parse("$baseUrl/authentication_token");
-  final headers = {'Content-Type': 'application/json'};
-  final body = json.encode({'email': email, 'password': password});
-
-  try {
-    final response = await http.post(uri, headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final String? token = data['token'];
-      return token;
-    } else {
-      print(
-        "Échec de la connexion : ${response.statusCode}\nRéponse : ${response.body}",
-      );
-      return null;
-    }
-  } catch (e) {
-    print("Exception lors de la requête de connexion : $e");
-    return null;
+  final url = Uri.parse("$baseUrl/authentication_token");
+  final headers = {
+    'accept': 'application/json',
+    'Content-Type': 'application/json',
+  };
+  final body = jsonEncode({'email': email, 'password': password});
+  final response = await http.post(url, headers: headers, body: body);
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to login: ${response.reasonPhrase}');
   }
 }

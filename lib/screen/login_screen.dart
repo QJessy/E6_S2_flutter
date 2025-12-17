@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e6_s2/api/user_api.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_e6_s2/services/secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -14,68 +15,50 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final _storage = const FlutterSecureStorage();
+  bool _isLoading = false;
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+  final SecureStorage secureStorage = SecureStorage();
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials();
+  }
+
+  Future<void> _loadCredentials() async {
+    final credentials = await secureStorage.readCredentials();
+    setState(() {
+      _emailController.text = credentials['email'] ?? '';
+      _passwordController.text = credentials['password'] ?? '';
+    });
+  }
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final response = await login(
+        _emailController.text,
+        _passwordController.text,
       );
-
-      try {
-        final String? token = await loginUser(
-          _emailController.text,
-          _passwordController.text,
-        );
-
-        if (!mounted) return;
-
-        Navigator.of(context).pop();
-
-        if (token != null) {
-          await _storage.write(key: 'auth_token', value: token);
-
-          print('✅ Connexion réussie ! Token d\'authentification :');
-          print(token);
-
-          final storedToken = await _storage.read(key: 'auth_token');
-          print('Token lu depuis secure_storage : $storedToken');
-
-          Navigator.of(context).pushReplacementNamed('/home');
-        } else {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Erreur de connexion'),
-              content: const Text('Email ou mot de passe incorrect.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-          );
-        }
-      } catch (e) {
-        if (!mounted) return;
-        Navigator.of(context).pop();
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Erreur'),
-            content: Text('Erreur lors de la connexion : $e'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-        );
-      }
+      await secureStorage.saveCredentials(
+        _emailController.text,
+        _passwordController.text,
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Authentification réussie')));
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.pushReplacementNamed(context, '/');
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Echec de l\'authentification $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -113,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: _login,
                   child: const Text('Se connecter'),
                 ),
               ),
