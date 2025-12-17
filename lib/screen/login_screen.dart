@@ -33,27 +33,31 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     setState(() {
       _isLoading = true;
     });
     try {
-      final response = await login(
-        _emailController.text,
-        _passwordController.text,
-      );
+      await login(_emailController.text, _passwordController.text);
       await secureStorage.saveCredentials(
         _emailController.text,
         _passwordController.text,
       );
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Authentification réussie')));
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, '/');
-      });
+      ).showSnackBar(const SnackBar(content: Text('Authentification réussie')));
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Echec de l\'authentification $e')),
+        SnackBar(
+          content: Text(
+            'Échec de l\'authentification: ${e.toString().replaceFirst("Exception: ", "")}',
+          ),
+        ),
       );
     } finally {
       setState(() {
@@ -74,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -96,8 +101,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Se connecter'),
+                  onPressed: _isLoading ? null : _login,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : const Text('Se connecter'),
                 ),
               ),
             ],

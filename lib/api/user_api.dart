@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../model/User.dart';
+import '../services/secure_storage.dart';
 
 class UserApi {
   final String baseUrl = dotenv.env['API_BASE_URL']!;
@@ -52,7 +53,7 @@ Future<int> registerUser(
   }
 }
 
-Future<http.Response> login(String email, String password) async {
+Future<void> login(String email, String password) async {
   final String baseUrl = dotenv.env['API_BASE_URL']!;
   final url = Uri.parse("$baseUrl/authentication_token");
   final headers = {
@@ -62,8 +63,10 @@ Future<http.Response> login(String email, String password) async {
   final body = jsonEncode({'email': email, 'password': password});
   final response = await http.post(url, headers: headers, body: body);
   if (response.statusCode == 200) {
-    return response;
+    final data = jsonDecode(response.body);
+    await SecureStorage().saveToken(data['token']);
   } else {
-    throw Exception('Failed to login: ${response.reasonPhrase}');
+    final errorData = jsonDecode(response.body);
+    throw Exception(errorData['message'] ?? 'Échec de la connexion');
   }
 }
