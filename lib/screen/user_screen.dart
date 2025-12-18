@@ -50,7 +50,7 @@ class _UserScreenState extends State<UserScreen> {
             itemBuilder: (context, index) {
               final u = users[index]; // user courant
               return GestureDetector(
-                onTap: () => detailMessage(u),
+                onTap: () => detailUser(u),
                 child: Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -88,7 +88,7 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  void detailMessage(UserModel user) {
+  void detailUser(UserModel user) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => UserDetailScreen(user: user)),
