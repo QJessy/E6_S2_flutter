@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../api/message_api.dart';
 import '../model/Message.dart';
 import '../screen/message_detail_screen.dart';
+import 'ajout_message_screen.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({super.key});
@@ -29,10 +30,34 @@ class _MessageScreenState extends State<MessageScreen> {
     );
   }
 
+  void _refreshMessages() {
+    setState(() {
+      futureMessages = MessageApi().fetchMessages();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
+      appBar: AppBar(
+        title: const Text('Messages'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              // On attend le résultat de la page d'ajout
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AjoutMessageScreen()),
+              );
+              // Si result est true, on rafraîchit la liste
+              if (result == true) {
+                _refreshMessages();
+              }
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<List<MessageModel>>(
         future: futureMessages,
         builder: (context, snapshot) {

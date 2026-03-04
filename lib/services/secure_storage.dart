@@ -25,6 +25,15 @@ class SecureStorage {
     return {'email': email, 'password': password};
   }
 
+  Future<void> saveUserId(String userId) async {
+    await _storage.write(key: 'user_id', value: userId);
+  }
+
+  // Ajoutez ceci pour lire l'ID
+  Future<String?> readUserId() async {
+    return await _storage.read(key: 'user_id');
+  }
+
   Future<void> deleteCredentials() async {
     await _storage.delete(key: _keyEmail);
     await _storage.delete(key: _keyPassword);

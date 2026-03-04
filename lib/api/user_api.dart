@@ -63,10 +63,18 @@ Future<void> login(String email, String password) async {
   final body = jsonEncode({'email': email, 'password': password});
   final response = await http.post(url, headers: headers, body: body);
   if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    await SecureStorage().saveToken(data['token']);
+  final Map<String, dynamic> responseData = jsonDecode(response.body); // On renomme pour plus de clarté
+  final storage = SecureStorage();
+
+  await storage.saveToken(responseData['token']);
+
+  // Correction ici : on va chercher dans l'objet 'data' interne
+  if (responseData['data'] != null && responseData['data']['id'] != null) {
+    String userId = responseData['data']['id'].toString();
+    await storage.saveUserId(userId);
+    print("ID utilisateur sauvegardé : $userId");
   } else {
-    final errorData = jsonDecode(response.body);
-    throw Exception(errorData['message'] ?? 'Échec de la connexion');
+    print("ALERTE : L'ID n'a pas été trouvé dans responseData['data']");
   }
+}
 }
