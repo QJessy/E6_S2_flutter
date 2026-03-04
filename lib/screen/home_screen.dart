@@ -101,11 +101,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void btMessage() {
-    Navigator.pushNamed(context, '/message');
+    if (_isLoggedIn) {
+      Navigator.pushNamed(context, '/message');
+    } else {
+      _showLoginRequiredDialog();
+    }
   }
 
   void btUser() {
-    Navigator.pushNamed(context, '/user');
+    if (_isLoggedIn) {
+      Navigator.pushNamed(context, '/user');
+    } else {
+      _showLoginRequiredDialog();
+    }
+  }
+
+  void _showLoginRequiredDialog() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Veuillez vous connecter pour accéder à cette section.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+    // On redirige vers la page de login
+    btLogin(); 
   }
 
   void btRegister() {
