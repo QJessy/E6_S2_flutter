@@ -44,10 +44,16 @@ class MessageApi {
         'titre': title,
         'contenu': content,
         'datePoste': DateTime.now().toIso8601String(),
-        'user': '/E6_S2_API/api/users/$userId',
+        'user': '/E6_S2/api/users/$userId',
       }),
     );
 
-    return response.statusCode == 201;
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      print('Erreur lors de la requête: ${response.statusCode}');
+      print('Corps de la réponse: ${response.body}');
+      return false;
+    }
   }
 }
